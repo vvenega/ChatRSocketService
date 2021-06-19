@@ -75,8 +75,9 @@ public class RedisConfig {
 
 	@Bean
 	ChannelTopic topic() {
-		//return new ChannelTopic("pubsub:jsa-channel");
+		
 		return new ChannelTopic("pubsub:"+topic);
+		
 	}
 
 }

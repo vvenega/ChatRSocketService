@@ -59,7 +59,7 @@ public class MessageRepository {
 	
 	public List<MessageBean> getMessages(String channel){
 		
-		System.err.println("getMessages Channel:"+channel);
+		//System.err.println("getMessages Channel:"+channel);
 		List<Map<String,Object>> lstMessages= new ArrayList<Map<String,Object>>();
 		List<MessageBean> lstMessagesBean = new ArrayList<MessageBean>();
 		
@@ -125,7 +125,7 @@ public class MessageRepository {
 		
 		
 		
-		System.err.println("Get Messages....:"+lstMessagesBean);
+		//System.err.println("Get Messages....:"+lstMessagesBean);
 		return lstMessagesBean;
 	}
 	

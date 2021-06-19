@@ -25,14 +25,46 @@ public class RSocketController {
 		
 		MessageBean dao = new MessageBean();
 		dao.setDate("");
-		dao.setMessage("hola");
+		dao.setMessage("@protocol");
 		dao.setNamereceiver("Andrea");
-		dao.setNamesender("Vicotr");
+		dao.setNamesender("Victor");
 		dao.setObjectid("123");
 		dao.setReceiver("owner160");
 		dao.setSender("vvenega");
 		dao.setChannel("mychannel_vvenega");
-		MessageRepository messageRepository;
+		
+		RedisMessageListenerContainer container=new RedisConfig().redisContainer();
+        List<String> listeners=new ArrayList<String>();
+		
+        RSocketController controller =new RSocketController();
+        controller.publish(dao, container, listeners);
+		
+		dao = new MessageBean();
+		dao.setDate("");
+		dao.setMessage("@protocol");
+		dao.setNamereceiver("Victor");
+		dao.setNamesender("Andrea");
+		dao.setObjectid("123");
+		dao.setReceiver("vvenega");
+		dao.setSender("owner160");
+		dao.setChannel("mychannel_owner160");
+		
+		controller.publish(dao, container, listeners);
+		
+		dao = new MessageBean();
+		dao.setDate("");
+		dao.setMessage("Hola");
+		dao.setNamereceiver("Andrea");
+		dao.setNamesender("Victor");
+		dao.setObjectid("123");
+		dao.setReceiver("owner160");
+		dao.setSender("vvenega");
+		dao.setChannel("mychannel_vvenega");
+		
+		controller.publish(dao, container, listeners);
+		
+		
+		/*MessageRepository messageRepository;
 		RedisConfig config = new RedisConfig();
 		config.topic=dao.getChannel();
 		
@@ -44,7 +76,7 @@ public class RSocketController {
         
         RSocketController object =new RSocketController();
 
-        object.publish(dao,container,listeners);
+        object.publish(dao,container,listeners);*/
 		
 		/*messageRepository=new MessageRepository(config.redisTemplate());
 		messageRepository.saveMessage(dao);
@@ -80,6 +112,7 @@ public class RSocketController {
                 	System.err.println("The client cancelled the channel.");
                 	try {
                 	container.destroy();
+                	listeners.clear();
                 	}catch(Exception e) {
                 		e.printStackTrace();
                 	}
@@ -105,7 +138,7 @@ public class RSocketController {
 	 List<MessageBean> lst = new ArrayList<MessageBean>();
 	 try {
 		 String channel =channelList.get(0);
-		 System.err.println(channel);
+		 //System.err.println(channel);
 		 if(channel!=null && !channel.equals("N/A")) {
 		 RedisConfig config = new RedisConfig();
 		 MessageRepository repository = new MessageRepository(config.redisTemplate());
@@ -127,14 +160,14 @@ public class RSocketController {
 		   
 		   if(message!=null) {	   
 
+		   RedisConfig config = new RedisConfig();
+		   config.topic=message.getChannel();
 		   
 		   if(!listeners.contains(message.getChannel())) {
-			   RedisConfig config = new RedisConfig();
+
 			   System.err.println("Subscribing to Topic with channel:"+message.getChannel());
-    		   config.topic=message.getChannel();
-			   //config.topic=destChannel;
     		   MessageSubscriber chatter = new MessageSubscriber();
-	    	   container.addMessageListener(chatter, config.topic());
+    		   container.addMessageListener(chatter, config.topic());
 			   
 			   listeners.add(message.getChannel());
 			   
@@ -143,12 +176,14 @@ public class RSocketController {
 		   if(message!=null && !message.getMessage().equals("@protocol_connect")) {
 		   String destChannel="mychannel_"+message.getReceiver();
 		   System.err.println("idconversation_"+message.getIdconversation());
-		   RedisConfig config = new RedisConfig();
+		   //RedisConfig config = new RedisConfig();
 		   config.topic=destChannel;
 		   MessagePublisher publisher = config.redisPublisher();
 
 		   publisher.publish(MessageBuilder.toDao(message));
 		   
+		   
+		   if(message!=null && !message.getMessage().startsWith("@protocol")) {
 		   String name = message.getNamesender();
 	        
 	        if(name!=null) {
@@ -169,9 +204,11 @@ public class RSocketController {
 			msg = msg.replace("\\", "-");
 			message.setMessage(msg);
 
+			
 	        proxy.broadcastMessage(message.getMessage(),message.getSender(),
 	        		message.getReceiver(),message.getChannel(),message.getId(),
 	        		message.getObjectid(),message.getNamesender(),message.getNamereceiver());
+		   }
 		   }
 		   }else 
 			   System.err.println("Message is Null!");

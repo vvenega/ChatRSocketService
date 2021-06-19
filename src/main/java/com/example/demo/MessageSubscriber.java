@@ -7,7 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MessageSubscriber implements MessageListener{
 	
-MessageRepository messageRepository;
+   MessageRepository messageRepository;
+	
 	
 	public MessageSubscriber() {
 		super();
@@ -33,10 +34,9 @@ MessageRepository messageRepository;
 		
 
 		}catch(Exception e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
 		}
 	}
-	
 	
 
 }

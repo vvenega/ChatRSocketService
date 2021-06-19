@@ -33,13 +33,10 @@ public class MessagePublisher {
 		+" to channel "+destChannel);
 		config.topic=destChannel;
 		
-		//MessageRepository messageRepository= new MessageRepository(config.redisTemplate());
-		
-		//messageRepository.saveMessage(message);
-		
-		redisTemplate.convertAndSend(config.topic, strMessage);
+
+		redisTemplate.convertAndSend(topic.getTopic(), strMessage);
 		}catch(Exception e) {
-			e.printStackTrace();
+			System.err.println(e.getLocalizedMessage());
 		}
 		
 		
